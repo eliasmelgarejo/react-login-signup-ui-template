@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
+
+
 export const jwtToken = localStorage.getItem("authorization");
 
 export default class Login extends Component {
@@ -8,7 +10,7 @@ export default class Login extends Component {
 
         this.state = {
             username: null,
-            password: null
+            password: null,
         };
         this.handleFormSubmit = this.handleFormSubmit.bind(this);
     }
@@ -16,7 +18,7 @@ export default class Login extends Component {
     handleFormSubmit = event => {
         event.preventDefault();
 
-        const endpoint = "http://localhost:8080/authenticate";
+        const endpoint = "http://localhost:8090/user";
 
         const username = this.state.username;
         const password = this.state.password;
@@ -26,28 +28,33 @@ export default class Login extends Component {
             password: password
         };
 
-        console.log(user_object);
+        //console.log(user_object);
         if (user_object.username === null || user_object.password === null) {
             alert('Faltan datos para el login!!!')
         } else {
-            axios.post(endpoint, user_object).then(res => {
-                localStorage.setItem("authorization", res.data.token);
-                return this.handleDashboard();
-            });
+
+            axios.post(endpoint + '?username=' + user_object.username + '&password=' + user_object.password)
+                //{ headers: { "username": user_object.username, "password": user_object.password } })
+                .then(res => {
+                    localStorage.setItem("authorization", res.data.token);
+                    return this.handleDashboard();
+                });
+
         }
 
     };
 
     handleDashboard() {
-        axios.get("http://localhost:8080/dashboard", { headers: { "Authorization": `Bearer ${jwtToken}` } }).then(res => {
-            console.log(res.data);
-            if (res.data === "success") {
-                this.props.history.push("/home");
-            } else {
-                alert("Authentication failure");
-                this.props.history.push("/");
-            }
-        });
+        axios.get("http://localhost:8090/hello", { headers: { "Authorization": `${jwtToken}` } })
+            .then(res => {
+                console.log('res.data', res.data);
+                if (res.data === "success") {
+                    this.props.history.push("/home");
+                } else {
+                    alert("Authentication failure");
+                    this.props.history.push("/");
+                }
+            });
     }
 
     handleUsuario = (e) => {

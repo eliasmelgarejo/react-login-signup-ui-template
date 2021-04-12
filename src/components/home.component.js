@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 class home extends Component {
     handleGoDashboard() {
-        window.location.href = "/dashboard";
+        //window.location.href = "/dashboard";
     }
 
     render() {
